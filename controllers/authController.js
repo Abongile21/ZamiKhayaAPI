@@ -132,7 +132,7 @@ exports.resetPassword = async(req, res, _next)=>{
         }
     catch(err){
             console.error("Login failed:", err);
-        res.status(500).send("Login failed");
+            res.status(500).send("Login failed");
         }
 
 
