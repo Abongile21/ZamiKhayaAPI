@@ -45,11 +45,6 @@ exports.signup  = async (req,res)=>{
 exports.login =  async (req, res)=>{
         try{
             const { email, password } = req.body;
-            
-            
-
-
-
             if (!(email && password)) {
                 return res.status(400).send("All input is required");
               }
@@ -91,3 +86,54 @@ exports.login =  async (req, res)=>{
 
 };
 
+exports.forgetPassword = async(req, res, _next)=>{
+
+    try{
+        const { email } = req.body;
+        const user = await User.findOne({ email });
+        if(!user){
+            return res.status(404).send({ message: "User Not found." })
+        }
+        const access_token = jwt.sign(
+            { user_id: user._id, user_email: user.email }, 
+            process.env.JWT_SECRET_KEY, 
+            {
+                algorithm: 'HS256',
+                expiresIn: "5h"
+            })
+            res.status(200).send({id: user._id, email: user.email, token: access_token})
+            
+
+
+    }catch(err){        
+        console.error("Login failed:", err);
+    res.status(500).send("Login failed");
+        
+    }
+}
+
+exports.resetPassword = async(req, res, _next)=>{
+    try{
+        const { email, password } = req.body;
+        const user = await User.findOne({ email });
+        if(!user){
+            return res.status(404).send({ message: "User Not found." })
+        }
+        const access_token = jwt.sign(
+            { user_id: user._id, user_email: user.email }, 
+            process.env.JWT_SECRET_KEY, 
+            {
+                algorithm: 'HS256',
+                expiresIn: "5h"
+            })
+            res.status(200).send({id: user._id, email: user.email, token: access_token})
+
+
+        }
+    catch(err){
+            console.error("Login failed:", err);
+        res.status(500).send("Login failed");
+        }
+
+
+    }   

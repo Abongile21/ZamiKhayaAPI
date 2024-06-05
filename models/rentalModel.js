@@ -1,14 +1,29 @@
 const mongoose = require('mongoose');
 
 const rentalSchema = new mongoose.Schema({
-  customerName: { 
-    type: String,
-    required: true 
+  
+rate:{
+  type: Number,
+  required: true
+}, 
+  electricity:{
+  type: Array, //provide array whether shared individual
+  required: true
 },
-  rentalStartDate: { 
-    type: Date, 
-    required: true 
+  rooms:{ 
+  type: Number,
+  required: true
 },
+
+  parking:{
+    type: [{
+      type: String,
+      enum: ['indoor', 'outdoor', 'no parking']
+  }],
+},
+
+
+
   rentalEndDate: {
     type: Date, 
     required: true
