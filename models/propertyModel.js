@@ -21,12 +21,12 @@ const propertySchema = new mongoose.Schema({
     },
     electricity: {
         type: String,
-        enum: ['Sharing','Indivual'],
+        enum: ['Sharing','Individual'],
         required: true
     },
     bathroom: {
         type: String, 
-        enum: ['Sharing','Indivual']
+        enum: ['Sharing','Individual']
     },
     price: {
         type: Number,
