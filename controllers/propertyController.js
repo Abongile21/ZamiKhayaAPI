@@ -1,9 +1,12 @@
 const Property = require('../models/Property');
 
-
 exports.createProperty = async (req, res) => {
     try {
-        const property = new Property(req.body);
+        const propertyData = req.body;
+        if (req.files) {
+            propertyData.images = req.files.map(file => file.path);
+        }
+        const property = new Property(propertyData);
         await property.save();
         res.status(201).json(property);
     } catch (error) {
@@ -11,7 +14,7 @@ exports.createProperty = async (req, res) => {
     }
 };
 
-xports.getAllProperties = async (req, res) => {
+exports.getAllProperties = async (req, res) => {
     try {
         const properties = await Property.find();
         res.status(200).json(properties);
@@ -19,6 +22,7 @@ xports.getAllProperties = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
 exports.getPropertyById = async (req, res) => {
     try {
         const property = await Property.findById(req.params.id);
@@ -31,10 +35,13 @@ exports.getPropertyById = async (req, res) => {
     }
 };
 
-// Update a property
 exports.updateProperty = async (req, res) => {
     try {
-        const property = await Property.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+        const propertyData = req.body;
+        if (req.files) {
+            propertyData.images = req.files.map(file => file.path);
+        }
+        const property = await Property.findByIdAndUpdate(req.params.id, propertyData, { new: true, runValidators: true });
         if (!property) {
             return res.status(404).json({ message: 'Property not found' });
         }
@@ -44,7 +51,6 @@ exports.updateProperty = async (req, res) => {
     }
 };
 
-// Delete a property
 exports.deleteProperty = async (req, res) => {
     try {
         const property = await Property.findByIdAndDelete(req.params.id);
