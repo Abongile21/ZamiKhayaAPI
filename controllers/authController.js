@@ -7,10 +7,10 @@ const { request } = require("express");
 request
 
 exports.signup  = async (req,res)=>{
-    const {email, password, roles} = req.body
+    const {fullname,email, password, roles} = req.body
     
     try{
-        if(!(email && password)){
+        if(!( fullname&&email && password)){
             console.error("User registration failed. All inputs are required!")
             res.send("User registration failed. All inputs are required!")
             return
@@ -23,6 +23,7 @@ exports.signup  = async (req,res)=>{
         }
         
         const user = new User({
+            fullname: fullname,
             email: email,
             password: await bcrypt.hash(password, 10),
             roles: roles || ['user']
