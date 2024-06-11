@@ -8,7 +8,7 @@ const userRoutes = require('./routes/user.routes');
 require('dotenv').config();
 
 const app = express();
-connectDB();
+
 
 
 app.use(bodyParser.json());
