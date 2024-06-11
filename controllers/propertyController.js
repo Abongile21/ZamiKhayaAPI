@@ -3,9 +3,6 @@ const Property = require('../models/propertyModel');
 exports.createProperty = async (req, res) => {
     try {
         const propertyData = req.body;
-        if (req.files) {
-            propertyData.images = req.files.map(file => file.path);
-        }
         const property = new Property(propertyData);
         await property.save();
         res.status(201).json(property);
