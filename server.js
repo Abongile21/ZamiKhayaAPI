@@ -21,7 +21,6 @@ app.use('/zam', userRoutes);
 app.use('/zam', bookingRoutes);
 app.use('/zam', saleRoutes);
 app.use('/zam', rentalRoutes);
-a
 
 const PORT = process.env.PORT || 5000;
 
