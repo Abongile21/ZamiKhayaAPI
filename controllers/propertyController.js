@@ -57,14 +57,13 @@ exports.deleteProperty = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
-exports.deleteAllProperty = async(req, res)=>{
+exports.deleteAllProperty = async(_req, res)=>{
 
     try {
         await Property.deleteMany({}); 
 
-        res.status(200).send({ message: "Successfully deleted all movies!" });
+        res.status(200).send({ message: "Successfully deleted all propreties!" });
     } catch (error) {
-        res.status(500).send({ message: "Error deleting movies", error });
+        res.status(500).send({ message: "Error deleting properties", error });
     }
-}
 }
