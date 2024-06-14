@@ -1,5 +1,5 @@
 const { default: mongoose } = require("mongoose");
-const User = require('../model/user_model') 
+const User = require('../models/userModel') 
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken');
 const { request } = require("express");
@@ -7,10 +7,10 @@ const { request } = require("express");
 request
 
 exports.signup  = async (req,res)=>{
-    const {email, password, roles} = req.body
+    const {fullname,email, password, roles} = req.body
     
     try{
-        if(!(email && password)){
+        if(!( fullname&&email && password)){
             console.error("User registration failed. All inputs are required!")
             res.send("User registration failed. All inputs are required!")
             return
@@ -23,19 +23,14 @@ exports.signup  = async (req,res)=>{
         }
         
         const user = new User({
+            fullname: fullname,
             email: email,
             password: await bcrypt.hash(password, 10),
             roles: roles || ['user']
         })
-        
-       
-        
-
-        await user.save()
-            
+        await user.save()   
         console.log(user)
         return res.status(200).send({ message: "User created successfully", user });
-
     }catch (err){
         console.error("Signup failed:", err);
         res.status(500).send("Signup failed"); 
@@ -119,16 +114,6 @@ exports.resetPassword = async(req, res, _next)=>{
         if(!user){
             return res.status(404).send({ message: "User Not found." })
         }
-        const access_token = jwt.sign(
-            { user_id: user._id, user_email: user.email }, 
-            process.env.JWT_SECRET_KEY, 
-            {
-                algorithm: 'HS256',
-                expiresIn: "5h"
-            })
-            res.status(200).send({id: user._id, email: user.email, token: access_token})
-
-
         }
     catch(err){
             console.error("Login failed:", err);
