@@ -35,9 +35,7 @@ exports.getPropertyById = async (req, res) => {
 exports.updateProperty = async (req, res) => {
     try {
         const propertyData = req.body;
-        if (req.files) {
-            propertyData.images = req.files.map(file => file.path);
-        }
+        
         const property = await Property.findByIdAndUpdate(req.params.id, propertyData, { new: true, runValidators: true });
         if (!property) {
             return res.status(404).json({ message: 'Property not found' });
@@ -59,3 +57,14 @@ exports.deleteProperty = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+exports.deleteAllProperty = async(req, res)=>{
+
+    try {
+        await Property.deleteMany({}); 
+
+        res.status(200).send({ message: "Successfully deleted all movies!" });
+    } catch (error) {
+        res.status(500).send({ message: "Error deleting movies", error });
+    }
+}
+}
