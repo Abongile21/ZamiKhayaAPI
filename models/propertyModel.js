@@ -39,10 +39,6 @@ const propertySchema = new mongoose.Schema({
     images: {
         type: [String], 
         required: true
-    },
-    inside_image: {
-        type: String,
-        required: true
     }
 }, {
     timestamps: true
