@@ -15,18 +15,18 @@ const propertySchema = new mongoose.Schema({
         enum: ['indoor', 'outdoor', 'no parking'],
         required: true
     },
-    rooms:{
+    rooms: {
         type: Number,
         required: true
     },
     electricity: {
         type: String,
-        enum: ['Sharing','Individual'],
+        enum: ['Sharing', 'Individual'],
         required: true
     },
     bathroom: {
-        type: String, 
-        enum: ['Sharing','Individual']
+        type: String,
+        enum: ['Sharing', 'Individual']
     },
     price: {
         type: Number,
@@ -36,25 +36,23 @@ const propertySchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    images:{
-        type: String,
+    images: {
+        type: [String], 
         required: true
     },
-    inside_image:{
-        type:String,
-        required: true  
+    inside_image: {
+        type: String,
+        required: true
     }
-    
 }, {
     timestamps: true
 });
-
 
 propertySchema.method("toJSON", function() {
     const { __v, _id, ...object } = this.toObject();
     object.id = _id;
     return object;
-  });
+});
 
 const Property = mongoose.model('Property', propertySchema);
 
