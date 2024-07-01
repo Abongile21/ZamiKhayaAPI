@@ -28,9 +28,11 @@ exports.signup  = async (req,res)=>{
             password: await bcrypt.hash(password, 10),
             roles: roles || ['user']
         })
+
         await user.save()   
-        console.log(user)
+    
         return res.status(200).send({ message: "User created successfully", user });
+
     }catch (err){
         console.error("Signup failed:", err);
         res.status(500).send("Signup failed"); 
@@ -58,11 +60,10 @@ exports.login =  async (req, res)=>{
               if (!passwordIsValid) {
                 return res.status(401).send({
                     accessToken: null,
-                    message: "Invalid Login Credentials"
+                    message: "Invalid Password"
                 });
               }
            
-
             const access_token = jwt.sign(
                 { user_id: user._id, user_email: user.email }, 
                 process.env.JWT_SECRET_KEY, 
@@ -73,22 +74,24 @@ exports.login =  async (req, res)=>{
 
             res.status(200).send({id: user._id, email: user.email, token: access_token})
 
-
         }catch(err){
             console.error("Login failed:", err);
         res.status(500).send("Login failed");
         }
-
 };
 
+
+// Reconsider the implementation of these functions
 exports.forgetPassword = async(req, res, _next)=>{
 
     try{
         const { email } = req.body;
         const user = await User.findOne({ email });
+
         if(!user){
             return res.status(404).send({ message: "User Not found." })
         }
+
         const access_token = jwt.sign(
             { user_id: user._id, user_email: user.email }, 
             process.env.JWT_SECRET_KEY, 
@@ -98,8 +101,6 @@ exports.forgetPassword = async(req, res, _next)=>{
             })
             res.status(200).send({id: user._id, email: user.email, token: access_token})
             
-
-
     }catch(err){        
         console.error("Login failed:", err);
     res.status(500).send("Login failed");
@@ -118,7 +119,5 @@ exports.resetPassword = async(req, res, _next)=>{
     catch(err){
             console.error("Login failed:", err);
             res.status(500).send("Login failed");
-        }
-
-
+     }
     }   

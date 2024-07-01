@@ -1,11 +1,11 @@
 const { default: mongoose } = require("mongoose");
 const User = require('../models/userModel'); 
-const { compareSync } = require("bcryptjs");
-
+const { compareSync } = require("bcryptjs"); // Where is this variable being used?
 
 exports.getAllUsers = async (req, res)=>{
     try{
         usersAll = await User.find()
+
         if(!usersAll){
             return res.status(400).send({message: "Failed to get all the users", usersAll})
         }
@@ -16,11 +16,11 @@ exports.getAllUsers = async (req, res)=>{
         res.status(500).send("Could not get all the users", err)
     }
 }
+
 exports.getOne = async (req, res)=>{
     try{
         const {email} = req.body
 
-        console.log(email)
         if(!email){
             return res.status(400).send("Email cannot be empty") 
         }
@@ -38,31 +38,36 @@ exports.getOne = async (req, res)=>{
         res.status(500).send({message:"Could not get the user", err})
     }
 }
+
 exports.updateOne = async (req, res)=>{
     try{
         
         const id = req.params.id
 
-        console.log(id)
+        // Are you assigning the user email in line 45? Output the relevant message in line 50
+
         if(!id){
             return res.status(400).send("Email cannot be empty") 
         }
 
         let updatedUser  = await User.findByIdAndUpdate(id, req.body)
 
-
+        //Are you really getting the user by email here?
         if(!updatedUser){
             return res.status(404).send({message:"Cannot get user with email : ", email}) 
         }
+
         await updatedUser.save()
 
         res.status(200).send({message: "Got user by email :", updatedUser})
-
 
     }catch(err){
         res.status(500).send({message:"Could not get the user", err})
     }
 }
+
+
+// In your case do you need all these functions? 
 
 exports.allAccess = (req, res) => {
     res.status(200).send("Public Content.");
