@@ -1,53 +1,48 @@
-const jwt = require("jsonwebtoken")
-const User = require('../models/userModel'); 
+const jwt = require('jsonwebtoken');
+const User = require('../models/userModel');
+require('dotenv').config();
 
-require('dotenv')
+const verifyToken = (req, res, next) => {
+    const token = req.header('Authorization');
+    if (!token) return res.status(401).json({ message: 'Access Denied. No Token Provided.' });
 
-
-
-
-
-let verifyToken = async (req, res, next)=>{
-
-    let token = req.headers["x-access-token"];
-
-    if (!token) {
-        return res.status(403).send({ message: "No token provided!" });
+    try {
+        const verified = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = verified;
+        next();
+    } catch (error) {
+        res.status(400).json({ message: 'Invalid Token' });
     }
-    
-    jwt.verify(
-        token, process.env.JWT_SECRET_KEY, 
-        (err, decoded) => {
-            if (err) {
-              return res.status(401).send({
-                message: "Unauthorized!",
-              });
-            }
-            console.log(decoded)
-            req.userId = decoded.user_id;
+};
 
-            
-
+const isAdmin = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.user._id);
+        if (user && user.role === 'admin') {
             next();
-          })
+        } else {
+            res.status(403).json({ message: 'Access Denied. Admins Only.' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
 
+const isLandlordOrAdmin = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.user._id);
+        if (user && (user.role === 'admin' || user.role === 'landlord')) {
+            next();
+        } else {
+            res.status(403).json({ message: 'Access Denied. Landlords or Admins Only.' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
 
-}
-
-let isAdmin = async (req, res, next) => {
- 
-  const user = await User.findById(req.userId)
-
-  if (user && user.roles.includes('admin')) {
-    
-      next(); 
-  } else {
-      res.status(403).json({ error: "You don't have permission to perform this action." }); 
-  }
-}
-let auth = {
+module.exports = {
     verifyToken,
-    isAdmin
-}
-
-module.exports = auth
+    isAdmin,
+    isLandlordOrAdmin
+};

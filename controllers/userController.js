@@ -1,6 +1,5 @@
-const { default: mongoose } = require("mongoose");
-const User = require('../models/userModel'); 
-const { compareSync } = require("bcryptjs"); // Where is this variable being used?
+const User = require('../models/userModel');
+const Property = require('../models/propertyModel');
 
 exports.getAllUsers = async (req, res)=>{
     try{
@@ -57,6 +56,7 @@ exports.updateOne = async (req, res)=>{
             return res.status(404).send({message:"Cannot get user with email : ", email}) 
         }
 
+
         await updatedUser.save()
 
         res.status(200).send({message: "Got user by email :", updatedUser})
@@ -67,20 +67,34 @@ exports.updateOne = async (req, res)=>{
 }
 
 
-// In your case do you need all these functions? 
+exports.addFavorite = async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id);
+        const property = await Property.findById(req.body.propertyId);
 
-exports.allAccess = (req, res) => {
-    res.status(200).send("Public Content.");
+        if (!property) {
+            return res.status(404).json({ message: 'Property not found' });
+        }
+
+        if (!user.favorites.includes(property._id)) {
+            user.favorites.push(property._id);
+            await user.save();
+        }
+
+        res.status(200).json(user);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 };
-  
-exports.user_dBoard = (req, res) => {
-    res.status(200).send("User Content.");
+
+exports.removeFavorite = async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id);
+        user.favorites.pull(req.body.propertyId);
+        await user.save();
+        res.status(200).json(user);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 };
-  
-exports.admin_dBoard = (req, res) => {
-    res.status(200).send("Admin Content.");
-};
-  
-exports.moderatorBoard = (req, res) => {
-    res.status(200).send("Moderator Content.");
-};
+

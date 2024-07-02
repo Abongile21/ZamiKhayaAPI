@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const userSchema = new mongoose.Schema({
+const landlordSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true
@@ -10,22 +10,22 @@ const userSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
-    password: {
+    address: {
         type: String,
         required: true
     },
-    favorites: [{
+    properties: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Property'
     }],
-    role: {
-        type: String,
-        default: 'user'
+    isAdmin: {
+        type: Boolean,
+        default: false
     }
 }, {
     timestamps: true
 });
 
-const User = mongoose.model('User', userSchema);
+const Landlord = mongoose.model('Landlord', landlordSchema);
 
-module.exports = User;
+module.exports = Landlord;

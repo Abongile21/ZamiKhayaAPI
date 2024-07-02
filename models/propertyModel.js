@@ -39,6 +39,11 @@ const propertySchema = new mongoose.Schema({
     images: {
         type: [String], 
         required: true
+    },
+    landlord: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Landlord',
+        required: true
     }
 }, {
     timestamps: true

@@ -1,123 +1,75 @@
-const { default: mongoose } = require("mongoose");
-const User = require('../models/userModel') 
-const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken');
-const { request } = require("express");
+const bcrypt = require('bcryptjs');
+const User = require('../models/userModel');
+const Landlord = require('../models/landlordModel');
 
-request
+exports.register = async (req, res) => {
+    try {
+        const { name, email, password, role } = req.body;
+        const hashedPassword = await bcrypt.hash(password, 10);
 
-exports.signup  = async (req,res)=>{
-    const {fullname,email, password, roles} = req.body
-    
-    try{
-        if(!( fullname&&email && password)){
-            console.error("User registration failed. All inputs are required!")
-            res.send("User registration failed. All inputs are required!")
-            return
+        let user;
+        if (role === 'landlord') {
+            user = new Landlord({
+                name,
+                email,
+                password: hashedPassword,
+                address: req.body.address, // Assuming address is provided
+                properties: []
+            });
+        } else {
+            user = new User({
+                name,
+                email,
+                password: hashedPassword,
+                role: role || 'user'
+            });
         }
 
-        let existingUser = await User.findOne({ email });
+        await user.save();
 
-        if (existingUser) {
-            return res.status(400).send({ message: 'User already exists'});
-        }
-        
-        const user = new User({
-            fullname: fullname,
-            email: email,
-            password: await bcrypt.hash(password, 10),
-            roles: roles || ['user']
-        })
+        const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
+            expiresIn: 86400 // 24 hours
+        });
 
-        await user.save()   
-    
-        return res.status(200).send({ message: "User created successfully", user });
-
-    }catch (err){
-        console.error("Signup failed:", err);
-        res.status(500).send("Signup failed"); 
+        res.status(201).json({ token });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
-}
-
-exports.login =  async (req, res)=>{
-        try{
-            const { email, password } = req.body;
-            if (!(email && password)) {
-                return res.status(400).send("All input is required");
-              }
-
-            const user = await User.findOne({ email });
-
-            if (!user){
-                return res.status(404).send({ message: "User Not found." })
-            } 
-
-            var passwordIsValid = bcrypt.compare(
-                req.body.password,
-                user.password
-              );
-            
-              if (!passwordIsValid) {
-                return res.status(401).send({
-                    accessToken: null,
-                    message: "Invalid Password"
-                });
-              }
-           
-            const access_token = jwt.sign(
-                { user_id: user._id, user_email: user.email }, 
-                process.env.JWT_SECRET_KEY, 
-                { 
-                    algorithm: 'HS256',
-                    expiresIn: "5h"
-                })
-
-            res.status(200).send({id: user._id, email: user.email, token: access_token})
-
-        }catch(err){
-            console.error("Login failed:", err);
-        res.status(500).send("Login failed");
-        }
 };
 
-
-// Reconsider the implementation of these functions
-exports.forgetPassword = async(req, res, _next)=>{
-
-    try{
-        const { email } = req.body;
-        const user = await User.findOne({ email });
-
-        if(!user){
-            return res.status(404).send({ message: "User Not found." })
-        }
-
-        const access_token = jwt.sign(
-            { user_id: user._id, user_email: user.email }, 
-            process.env.JWT_SECRET_KEY, 
-            {
-                algorithm: 'HS256',
-                expiresIn: "5h"
-            })
-            res.status(200).send({id: user._id, email: user.email, token: access_token})
-            
-    }catch(err){        
-        console.error("Login failed:", err);
-    res.status(500).send("Login failed");
-        
-    }
-}
-
-exports.resetPassword = async(req, res, _next)=>{
-    try{
+exports.login = async (req, res) => {
+    try {
         const { email, password } = req.body;
-        const user = await User.findOne({ email });
-        if(!user){
-            return res.status(404).send({ message: "User Not found." })
+        const user = await User.findOne({ email }) || await Landlord.findOne({ email });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
         }
+
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            return res.status(401).json({ message: 'Invalid password' });
         }
-    catch(err){
-            console.error("Login failed:", err);
-            res.status(500).send("Login failed");
-     }
-    }   
+
+        const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
+            expiresIn: 86400 // 24 hours
+        });
+
+        res.status(200).json({ token });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+exports.getUserProfile = async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id) || await Landlord.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        res.status(200).json(user);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
