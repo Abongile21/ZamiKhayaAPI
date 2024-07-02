@@ -4,22 +4,28 @@ const imageUpload = require('./images.controller');
 exports.createProperty = async (req, res) => {
     try {
         const propertyData = req.body;
-        const images = req.files ? req.files.images : null;
+        console.log(propertyData)
+        
+        const files = req.files;
         const imageUrls = [];
-
-        if (images) {
-            for (let image of images) {
+        if (files.images) {
+            for (let image of files.images) {
                 const uploadResult = await imageUpload.UploadImage(image);
                 imageUrls.push(uploadResult.Location);
+                // console.log(imageUrls)
             }
         }
 
-        propertyData.images = imageUrls;
-        propertyData.landlord = req.user.id;
-        const property = new Property(propertyData);
-        await property.save();
-
-        res.status(201).json(property);
+        console.log(propertyData)
+        // propertyData.landlord = req.user.id
+        if(imageUrls && propertyData){
+            propertyData.images = imageUrls;
+            const property = new Property(propertyData);
+            await property.save();
+            res.status(201).json(property);
+        }
+                
+        
     } catch (error) {
         res.status(400).json({ message: error.message });
     }

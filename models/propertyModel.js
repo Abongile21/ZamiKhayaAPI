@@ -42,8 +42,7 @@ const propertySchema = new mongoose.Schema({
     },
     landlord: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Landlord',
-        required: true
+        ref: 'Landlord'
     }
 }, {
     timestamps: true
