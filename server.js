@@ -1,5 +1,4 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 const connectDB = require('./config/db.config');
 const propertyRoutes= require('./routes/property.routes')
 const authRoutes = require('./routes/auth.routes');
@@ -7,16 +6,18 @@ const userRoutes = require('./routes/user.routes');
 const mongoose =require('mongoose')
 const cors = require('cors');
 const app = express();
+const fileUpload= require('express-fileupload')
 
 require('dotenv').config();
 
 app.use(express.json())
+app.use(fileUpload());
 
 
 app.use(cors())
 
 
-// Routes
+
 app.use('/zam', authRoutes);
 app.use('/zam', userRoutes);
 app.use('/zam', propertyRoutes);
