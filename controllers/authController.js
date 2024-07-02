@@ -14,7 +14,7 @@ exports.register = async (req, res) => {
                 name,
                 email,
                 password: hashedPassword,
-                address: req.body.address, // Assuming address is provided
+                address: req.body.address,
                 properties: []
             });
         } else {
