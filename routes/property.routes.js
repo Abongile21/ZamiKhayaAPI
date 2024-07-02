@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const propertyController = require('../controllers/propertyController');
-const { isAdmin, isLandlordOrAdmin } = require('../middlewares/authMiddleware');
+const { isAdmin, isLandlordOrAdmin } = require('../middleware/auth.middleware');
 
 router.post('/properties',isLandlordOrAdmin,propertyController.createProperty);
 router.get('/properties', propertyController.getAllProperties);

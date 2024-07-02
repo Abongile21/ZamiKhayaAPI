@@ -1,5 +1,5 @@
 const Property = require('../models/propertyModel');
-const imageUpload = require('../controllers/image.controller');
+const imageUpload = require('./images.controller');
 
 exports.createProperty = async (req, res) => {
     try {
