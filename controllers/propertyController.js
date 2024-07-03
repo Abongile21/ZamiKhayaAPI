@@ -4,8 +4,7 @@ const imageUpload = require('./images.controller');
 exports.createProperty = async (req, res) => {
     try {
         const propertyData = req.body;
-        console.log(propertyData)
-        
+    
         const files = req.files;
         const imageUrls = [];
         if (files.images) {
@@ -15,15 +14,13 @@ exports.createProperty = async (req, res) => {
                 // console.log(imageUrls)
             }
         }
-
-        console.log(propertyData)
         // propertyData.landlord = req.user.id
         if(imageUrls && propertyData){
             propertyData.images = imageUrls;
             const property = new Property(propertyData);
-            await property.save();
-            res.status(201).json(property);
+            await property.save(); 
         }
+        res.status(201).json(property);
                 
         
     } catch (error) {
