@@ -8,6 +8,7 @@ router.get('/properties', propertyController.getAllProperties);
 router.get('/properties/:id', propertyController.getPropertyById);
 router.put('/properties/:id', isLandlordOrAdmin,propertyController.updateProperty);
 router.delete('/properties/:id',isLandlordOrAdmin, propertyController.deleteProperty);
-router.delete('/properties', propertyController.deleteAllProperties);
+router.delete('/properties',propertyController.deleteAllProperties);
+
 
 module.exports = router;

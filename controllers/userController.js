@@ -1,9 +1,10 @@
 const User = require('../models/userModel');
+const Landlord = require('../models/landlordModel')
 const Property = require('../models/propertyModel');
 
 exports.getAllUsers = async (req, res)=>{
     try{
-        usersAll = await User.find()
+        let usersAll =(await User.find()).concat(await Landlord.find())
 
         if(!usersAll){
             return res.status(400).send({message: "Failed to get all the users", usersAll})
@@ -46,7 +47,7 @@ exports.updateOne = async (req, res)=>{
         // Are you assigning the user email in line 45? Output the relevant message in line 50
 
         if(!id){
-            return res.status(400).send("Email cannot be empty") 
+            return res.status(400).send("id not ") 
         }
 
         let updatedUser  = await User.findByIdAndUpdate(id, req.body)

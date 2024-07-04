@@ -11,8 +11,7 @@ const landlordSchema = new mongoose.Schema({
         unique: true
     },
     address: {
-        type: String,
-        required: true
+        type: String
     },
     properties: [{
         type: mongoose.Schema.Types.ObjectId,

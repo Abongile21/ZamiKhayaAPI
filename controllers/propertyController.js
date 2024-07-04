@@ -4,6 +4,8 @@ const imageUpload = require('./images.controller');
 exports.createProperty = async (req, res) => {
     try {
         const propertyData = req.body;
+
+        console.log(propertyData)
     
         const files = req.files;
         const imageUrls = [];
@@ -11,7 +13,7 @@ exports.createProperty = async (req, res) => {
             for (let image of files.images) {
                 const uploadResult = await imageUpload.UploadImage(image);
                 imageUrls.push(uploadResult.Location);
-                // console.log(imageUrls)
+            
             }
         }
         // propertyData.landlord = req.user.id
