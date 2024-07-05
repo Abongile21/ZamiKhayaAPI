@@ -16,7 +16,7 @@ const landlordSchema = new mongoose.Schema({
     },
     role:{
         type: String,
-        default: landlord
+        default: "landlord"
     },
     address: {
         type: String
