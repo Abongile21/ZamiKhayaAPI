@@ -50,11 +50,11 @@ exports.updateOne = async (req, res)=>{
             return res.status(400).send("id not ") 
         }
 
-        let updatedUser  = await User.findByIdAndUpdate(id, req.body)
+        let updatedUser  = await User.findByIdAndUpdate(id, req.body) || await Landlord.findByIdAndUpdate(id ,req.body)
 
         //Are you really getting the user by email here?
         if(!updatedUser){
-            return res.status(404).send({message:"Cannot get user with email : ", email}) 
+            return res.status(404).send({message:"Cannot get user with"}) 
         }
 
 
