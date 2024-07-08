@@ -22,7 +22,7 @@ exports.createProperty = async (req, res) => {
             const property = new Property(propertyData);
             await property.save(); 
         }
-        res.status(201).json(property);
+        res.status(201).json(propertyData);
                 
         
     } catch (error) {
