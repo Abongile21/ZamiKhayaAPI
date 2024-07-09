@@ -8,6 +8,7 @@ exports.register = async (req, res) => {
         const { name, email, password, role } = req.body;
         const hashedPassword = await bcrypt.hash(password, 10);
 
+
         let user;
         if (role === 'landlord') {
             user = new Landlord({
@@ -28,7 +29,7 @@ exports.register = async (req, res) => {
 
         await user.save();
 
-        res.status(201).json({ token });
+        res.status(201).json({message:"Account created successfully"});
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

@@ -5,27 +5,35 @@ exports.createProperty = async (req, res) => {
     try {
         const propertyData = req.body;
 
-        console.log(propertyData)
+        console.log(req.body)
     
         const files = req.files;
         const imageUrls = [];
+
         if (files.images) {
             for (let image of files.images) {
                 const uploadResult = await imageUpload.UploadImage(image);
                 imageUrls.push(uploadResult.Location);
-            
             }
         }
+        
         // propertyData.landlord = req.user.id
         if(imageUrls && propertyData){
             propertyData.images = imageUrls;
+
+            propertyData.rooms = Number(propertyData.rooms) 
+            propertyData.price = Number(propertyData.price) 
+            propertyData.coordinates = JSON.parse(propertyData.coordinates) 
+
             const property = new Property(propertyData);
             await property.save(); 
         }
+
         res.status(201).json(propertyData);
                 
         
     } catch (error) {
+        console.log(error)
         res.status(400).json({ message: error.message });
     }
 };

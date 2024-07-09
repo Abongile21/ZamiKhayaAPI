@@ -10,6 +10,24 @@ const propertySchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    area:{
+        type: String,
+        required: true
+    },
+    coordinates: {
+            lat:{
+                type:Number,
+                default: 0.0,
+                required: true
+            },
+
+            lng:{
+                type:Number,
+                default: 0.0,
+                required: true
+            },
+            
+        },
     parking: {
         type: String,
         enum: ['indoor', 'outdoor', 'no parking'],
@@ -34,7 +52,8 @@ const propertySchema = new mongoose.Schema({
     },
     description: {
         type: String,
-        required: true
+        // required: true,
+        default:"This is the des"
     },
     images: {
         type: [String], 
