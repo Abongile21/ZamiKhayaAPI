@@ -10,12 +10,15 @@ exports.createProperty = async (req, res) => {
         const files = req.files;
         const imageUrls = [];
 
-        if (files.images) {
-            for (let image of files.images) {
+        if (files.image) {
+            for (let image of files.image) {
                 const uploadResult = await imageUpload.UploadImage(image);
                 imageUrls.push(uploadResult.Location);
             }
         }
+
+        
+
         
         // propertyData.landlord = req.user.id
         if(imageUrls && propertyData){
