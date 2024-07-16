@@ -52,8 +52,8 @@ const propertySchema = new mongoose.Schema({
     },
     description: {
         type: String,
-        // required: true,
-        default:"This is the des"
+        required: true,
+
     },
     images: {
         type: [String], 
