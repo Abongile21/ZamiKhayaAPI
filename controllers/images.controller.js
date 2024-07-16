@@ -26,5 +26,7 @@ exports.UploadImage = async (fileImage) => {
         Body: fileContent
     }
 
+    console.log("Uploaded")
+
    return await s3.upload(params).promise()
 }
