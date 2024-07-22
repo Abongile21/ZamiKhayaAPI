@@ -27,7 +27,9 @@ app.use('/zam', propertyRoutes);
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
+app.get('/', (res, _req) => res.json({"message" : 'Api is running!'}))
+
+app.listen(PORT, (res, req) => {
   console.log(`Server is running on port ${PORT}`);
 });
 
