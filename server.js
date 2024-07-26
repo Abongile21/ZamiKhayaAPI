@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const connectDB = require('./config/db.config');
 const propertyRoutes= require('./routes/property.routes')
@@ -9,11 +10,11 @@ const app = express();
 const bodyParser = require('body-parser')
 const fileUpload= require('express-fileupload')
 
-require('dotenv').config();
 
 
 app.use(bodyParser.json({limit: '50mb'}));
-app.use(bodyParser.urlencoded({limit: '50mb'}));
+app.use(bodyParser.urlencoded({limit: '50mb'}))
+app.use(bodyParser.urlencoded({extended:true}))
 app.use(fileUpload());
 
 
@@ -28,7 +29,11 @@ app.use('/zam', propertyRoutes);
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
+app.get('/', (req, res) =>{
+  res.send(`Welcome to zamikhaya api`)
+})
+
+app.listen(PORT, (res, req) => {
   console.log(`Server is running on port ${PORT}`);
 });
 
