@@ -4,46 +4,41 @@ const imageUpload = require('./images.controller');
 exports.createProperty = async (req, res) => {
     try {
         const propertyData = req.body;
-
-        console.log(req.body)
-    
         const files = req.files;
         const imageUrls = [];
 
-        if (files.images) {
-            for (let image of files.images) {
-                const uploadResult = await imageUpload.UploadImage(image);
+        console.log(req.body);
+
+        if (files?.images?.length) {
+            for (const image of files.images) {
+                const uploadResult = await imageUpload.uploadToCloudinary(image);
                 imageUrls.push(uploadResult.Location);
             }
         }
 
-        
-
-        
-        // propertyData.landlord = req.user.id
-        if(imageUrls && propertyData){
+        if (propertyData && imageUrls.length > 0) {
             propertyData.images = imageUrls;
-
-            propertyData.rooms = Number(propertyData.rooms) 
-            propertyData.price = Number(propertyData.price) 
-            propertyData.coordinates = JSON.parse(propertyData.coordinates) 
+            propertyData.rooms = Number(propertyData.rooms);
+            propertyData.price = Number(propertyData.price);
+            propertyData.coordinates = JSON.parse(propertyData.coordinates);
 
             const property = new Property(propertyData);
-            await property.save(); 
+            await property.save();
+
+            return res.status(201).json(property);
         }
 
-        res.status(201).json(propertyData);
-                
-        
+        res.status(400).json({ message: 'Invalid property data or missing images' });
+
     } catch (error) {
-        console.log(error)
+        console.error(error);
         res.status(400).json({ message: error.message });
     }
 };
 
 exports.getAllProperties = async (req, res) => {
     try {
-        const properties = await Property.find()
+        const properties = await Property.find();
         res.status(200).json(properties);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -52,7 +47,7 @@ exports.getAllProperties = async (req, res) => {
 
 exports.getPropertyById = async (req, res) => {
     try {
-        const property = await Property.findById(req.params.id)
+        const property = await Property.findById(req.params.id);
         if (!property) {
             return res.status(404).json({ message: 'Property not found' });
         }
@@ -65,12 +60,12 @@ exports.getPropertyById = async (req, res) => {
 exports.updateProperty = async (req, res) => {
     try {
         const propertyData = req.body;
-        const images = req.files ? req.files.images : null;
+        const images = req.files?.images || [];
         const imageUrls = [];
 
-        if (images) {
-            for (let image of images) {
-                const uploadResult = await imageUpload.UploadImage(image);
+        if (images.length) {
+            for (const image of images) {
+                const uploadResult = await imageUpload.uploadToCloudinary(image);
                 imageUrls.push(uploadResult.Location);
             }
         }
@@ -79,11 +74,18 @@ exports.updateProperty = async (req, res) => {
             propertyData.images = imageUrls;
         }
 
-        const property = await Property.findByIdAndUpdate(req.params.id, propertyData, { new: true, runValidators: true });
+        const property = await Property.findByIdAndUpdate(
+            req.params.id,
+            propertyData,
+            { new: true, runValidators: true }
+        );
+
         if (!property) {
             return res.status(404).json({ message: 'Property not found' });
         }
+
         res.status(200).json(property);
+
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
@@ -104,8 +106,8 @@ exports.deleteProperty = async (req, res) => {
 exports.deleteAllProperties = async (req, res) => {
     try {
         await Property.deleteMany({});
-        res.status(200).send({ message: "Successfully deleted all properties!" });
+        res.status(200).json({ message: 'Successfully deleted all properties!' });
     } catch (error) {
-        res.status(500).send({ message: "Error deleting properties", error });
+        res.status(500).json({ message: 'Error deleting properties', error });
     }
 };
