@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const propertyController = require('../controllers/propertyController');
+const propertyController = require('../controllers/property.controller');
 const { isAdmin, isLandlordOrAdmin } = require('../middleware/auth.middleware');
 
 router.post('/properties',propertyController.createProperty);

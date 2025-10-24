@@ -1,7 +1,7 @@
 require('dotenv').config()
 
 const db = {
-    uri: process.env.db_uri
+    uri: process.env.MONGO_URI
 }
 
 module.exports = db
