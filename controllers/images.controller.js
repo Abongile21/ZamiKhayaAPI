@@ -1,32 +1,27 @@
-const fileUpload = require('express-fileupload')
-const AWS = require('aws-sdk');
-require("dotenv").config()
-const express = require('express');
+const cloudinary = require('cloudinary').v2;
+require("dotenv").config();
 
-const app = express();
+// Configure Cloudinary with your credentials
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+    secure: true,
+});
 
-app.use(fileUpload())
+exports.uploadToCloudinary = async (fileImage) => {
+    try {
+        // The 'fileImage' object contains the path to the temporary file
+        const result = await cloudinary.uploader.upload(fileImage.tempFilePath, {
+            folder: "project_uploads", // Optional: A folder in your Cloudinary account
+            resource_type: "auto",      // Automatically detect file type
+        });
 
+        // The result contains the public URL in 'secure_url'
+        return { Location: result.secure_url };
 
-exports.UploadImage = async (fileImage) => {
-
-    AWS.config.update({
-        accessKeyId: process.env.AWS_AKEY,
-        secretAccessKey: process.env.AWS_SKEY,
-        region: process.env.AWS_REGION
-    })
-
-    const s3 = new AWS.S3();
-
-    const fileContent = Buffer.from(fileImage.data, "Binary");
-
-    const params = {
-        Bucket: process.env.AWS_BUCKET,
-        Key: fileImage.name,
-        Body: fileContent
+    } catch (error) {
+        console.error("Cloudinary upload error:", error);
+        throw new Error('Failed to upload file to Cloudinary.');
     }
-
-    console.log("Uploaded")
-
-   return await s3.upload(params).promise()
-}
+};
