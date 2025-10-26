@@ -1,15 +1,13 @@
-import express from 'express';
-import mongoose from 'mongoose';
-import cors from 'cors';
-import fileUpload from 'express-fileupload';
-import { config } from 'dotenv';
+require('dotenv').config();
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+const fileUpload = require('express-fileupload');
+const db = require('./config/db.config');
 
-import propertyRoutes from '../routes/property.routes.js';
-import authRoutes from '../routes/auth.routes.js';
-import userRoutes from '../routes/user.routes.js';
-import db from '../config/db.config.js';
-
-config();
+const propertyRoutes = require('./routes/property.routes');
+const authRoutes = require('./routes/auth.routes');
+const userRoutes = require('./routes/user.routes');
 
 const app = express();
 
@@ -27,23 +25,16 @@ app.use('/zam', propertyRoutes);
 // Root route
 app.get('/', (req, res) => res.send('Welcome to ZamiKhaya API'));
 
-// MongoDB connection caching
-let isConnected = false;
+// Port setup
+const PORT = process.env.PORT || 5000;
 
-async function connectDB() {
-  if (isConnected) return;
-  if (!db.uri) throw new Error('❌ MONGO_URI not found');
-
-  const connection = await mongoose.connect(db.uri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
+// Database connection + server start
+mongoose.connect(db.uri)
+  .then(() => {
+    console.log("✅ Connected successfully to MongoDB!");
+    app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+  })
+  .catch((error) => {
+    console.error("❌ Could not connect to MongoDB:", error.message);
+    process.exit(1);
   });
-  isConnected = connection.connections[0].readyState;
-  console.log('✅ Connected to MongoDB');
-}
-
-// Vercel API handler
-export default async function handler(req, res) {
-  await connectDB();
-  return app(req, res);
-}
