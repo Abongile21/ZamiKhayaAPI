@@ -35,8 +35,8 @@
     "mongodb": "^6.20.0",
     "mongoose": "^8.4.1",
     "nodemon": "^3.1.2",
-    "serverless-http": "^4.0.0",
-    "qs": "^6.12.2"
+    "qs": "^6.12.2",
+    "serverless-http": "^4.0.0"
   },
   "resolutions": {
     "gopd": "0.0.0",
