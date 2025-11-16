@@ -1,14 +1,13 @@
-const serverless = require('serverless-http');
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const fileUpload = require('express-fileupload');
-const connectDB = require('./config/db.config');
+const serverless = require('serverless-http'); // Wrap for Vercel
 
 const authRoutes = require('./routes/auth.routes');
 const userRoutes = require('./routes/user.routes');
 const propertyRoutes = require('./routes/property.routes');
-
-require('dotenv').config();
+const connectDB = require('./config/db.config');
 
 const app = express();
 
@@ -33,10 +32,22 @@ let cachedDb = null;
 
 async function connectToDatabase(uri) {
     if (cachedDb) return cachedDb;
-    const db = await connectDB(uri);
-    cachedDb = db;
-    return db;
+    cachedDb = await connectDB(uri);
+    return cachedDb;
 }
 
-// Wrap Express app in serverless handler
+// Use cached connection in routes (example)
+// authRoutes, userRoutes, propertyRoutes should call `await connectToDatabase(process.env.MONGO_URI)` as needed
+
+// === LOCAL SERVER ===
+if (process.env.NODE_ENV !== 'production') {
+    connectToDatabase(process.env.MONGO_URI)
+        .then(() => console.log('✅ MongoDB Connected'))
+        .catch(err => console.error('❌ MongoDB Error:', err.message));
+
+    const PORT = process.env.PORT || 5000;
+    app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+}
+
+// === VERCEL SERVERLESS EXPORT ===
 module.exports = serverless(app);
