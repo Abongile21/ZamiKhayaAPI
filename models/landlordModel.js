@@ -39,6 +39,6 @@ landlordSchema.method("toJSON", function() {
     return object;
 });
 
-const Landlord = mongoose.model('Landlord', landlordSchema);
+const Landlord = mongoose.models.Landlord || mongoose.model('Landlord', landlordSchema);
 
 module.exports = Landlord;
