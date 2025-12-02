@@ -10,3 +10,23 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*    
 .vercel
+node_modules/
+
+
+
+/.cache
+.next/          
+out/
+/build/ 
+logs/   
+*.log
+*.tsbuildinfo   
+
+
+# Mac system files      
+
+*.swp
+*~              
+
+# Windows system files
+Thumbs.db   
