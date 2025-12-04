@@ -20,8 +20,18 @@ const allowedOrigins = [
 
 app.use(cors({
     origin: function (origin, callback) {
-        if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
-        return callback(new Error("Not allowed by CORS"));
+        // Allow requests with no origin (e.g., curl, mobile apps, or same-file requests)
+        if (!origin) return callback(null, true);
+
+        // During development allow localhost and file:// origins for convenience
+        if (process.env.NODE_ENV !== 'production') {
+            if (origin.startsWith('file://') || /^http:\/\/localhost(:\d+)?$/.test(origin) || /^[A-Za-z]:\\\\/.test(origin)) {
+                return callback(null, true);
+            }
+        }
+
+        if (allowedOrigins.includes(origin)) return callback(null, true);
+        return callback(new Error('Not allowed by CORS'));
     },
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
