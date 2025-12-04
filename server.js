@@ -70,4 +70,7 @@ if (process.env.NODE_ENV !== 'production') {
     app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 }
 
-module.exports = serverless(app);
+const handler = serverless(app);
+
+module.exports = handler;
+module.exports.app = app;
