@@ -47,6 +47,11 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 // Swagger UI
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
+// Expose raw swagger JSON for debugging and external usage
+app.get('/swagger.json', (req, res) => {
+    res.json(swaggerSpec);
+});
+
 app.use('/zam', authRoutes);
 app.use('/zam', userRoutes);
 app.use('/zam', propertyRoutes);
