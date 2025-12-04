@@ -4,7 +4,6 @@ const cors = require('cors');
 const fileUpload = require('express-fileupload');
 const serverless = require('serverless-http');
 const swaggerUi = require('swagger-ui-express');
-const swaggerSpec = require('./docs/swagger');
 
 const authRoutes = require('./routes/auth.routes');
 const userRoutes = require('./routes/user.routes');
@@ -44,12 +43,24 @@ app.use(fileUpload({ limits: { fileSize: 5 * 1024 * 1024 } }));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
-// Swagger UI
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+// Swagger UI (load spec on-demand to avoid heavy initialization during cold start)
+app.use('/api-docs', swaggerUi.serve, (req, res, next) => {
+    try {
+        const swaggerSpec = require('./docs/swagger');
+        return swaggerUi.setup(swaggerSpec)(req, res, next);
+    } catch (err) {
+        return next(err);
+    }
+});
 
-// Expose raw swagger JSON for debugging and external usage
-app.get('/swagger.json', (req, res) => {
-    res.json(swaggerSpec);
+// Expose raw swagger JSON for debugging and external usage (generated on-demand)
+app.get('/swagger.json', (req, res, next) => {
+    try {
+        const swaggerSpec = require('./docs/swagger');
+        res.json(swaggerSpec);
+    } catch (err) {
+        next(err);
+    }
 });
 
 app.use('/zam', authRoutes);
